@@ -1,0 +1,24 @@
+version: "3.7"
+
+services:
+
+  filebeat:
+    container_name: filebeat
+    image: docker.elastic.co/beats/filebeat:7.6.1
+    volumes:
+      - $HOME/workspace/bizapps/FailFast/iaac/multipass-dev-box/dev-tools/logs/:/var/log/:ro
+      - ./config/filebeat.yml:/usr/share/filebeat/filebeat.yml
+      - /var/run/docker.sock:/var/run/docker.sock
+      - /var/lib/docker/containers/:/var/lib/docker/containers/
+    environment:
+      - setup.kibana.host=localhost:5601 
+      - output.elasticsearch.hosts=["elasticsearch:9200"] 
+      - ELASTICSEARCH_URL=elasticsearch:9300
+      - ELASTICSEARCH_USERNAME=${ELASTICSEARCH_USERNAME:-elastic}
+      - ELASTICSEARCH_PASSWORD=${ELASTICSEARCH_PASSWORD:-changeme}
+
+networks:
+  default:
+    external:
+      name: elk
+
